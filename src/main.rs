@@ -4,11 +4,15 @@ use ggez::event::{self, EventHandler};
 
 use rand::Rng;
 
-const SCREEN_SIZE: f32 = 100.0;
+const SCREEN_SIZE: f32 = 1000.0;
+
+const GRID_SIZE: usize = 100;
+
+const CELL_SIZE: f32 = SCREEN_SIZE / (GRID_SIZE as f32);
 
 fn main() {
     // Make a Context.
-    let (mut ctx, event_loop) = ContextBuilder::new("my_game", "Cool Game Author")
+    let (mut ctx, event_loop) = ContextBuilder::new("Game of Life", "Nara")
         .window_mode(ggez::conf::WindowMode::default().dimensions(SCREEN_SIZE, SCREEN_SIZE))
         .build()
         .expect("aieee, could not create ggez context!");
@@ -34,7 +38,7 @@ impl MyGame {
         // Init world randomly
         let mut new_w: Vec<bool> = Vec::new();
 
-        for _ in 0..1000 {
+        for _ in 0..(GRID_SIZE * GRID_SIZE) {
             let num: f64 = rand::thread_rng().gen();
             if num < 0.30 {
                 new_w.push(true);
@@ -60,36 +64,36 @@ impl EventHandler<ggez::GameError> for MyGame {
             // Count neighboors
             let mut cntneig = 0;
 
-            if pos % 10 != 0 && pos >= 11 {
-                let tl = pos - 10 - 1;
+            if pos % GRID_SIZE != 0 && pos >= GRID_SIZE+1 {
+                let tl = pos - GRID_SIZE - 1;
                 if self.world[tl] { cntneig += 1; }
             }
-            if pos > 10 {
-                let t = pos-10;
+            if pos > GRID_SIZE {
+                let t = pos-GRID_SIZE;
                 if self.world[t] { cntneig += 1; }
             }
-            if pos % 10 != (10-1) && pos > 10 {
-                let tr = pos - 10 + 1;
+            if pos % GRID_SIZE != (GRID_SIZE-1) && pos > GRID_SIZE {
+                let tr = pos - GRID_SIZE + 1;
                 if self.world[tr] { cntneig += 1; }
             }
-            if pos % 10 != 0 {
+            if pos % GRID_SIZE != 0 {
                 let l = pos - 1;
                 if self.world[l] { cntneig += 1; } 
             }
-            if pos % 10 != (10-1) {
+            if pos % GRID_SIZE != (GRID_SIZE-1) {
                 let r = pos + 1;
                 if self.world[r] { cntneig += 1; } 
             }
-            if pos % 10 != 0 && pos < (10*10)-10 {
-                let bl = pos + 10 - 1;
+            if pos % GRID_SIZE != 0 && pos < (GRID_SIZE*GRID_SIZE)-GRID_SIZE {
+                let bl = pos + GRID_SIZE - 1;
                 if self.world[bl] { cntneig += 1; }
             }
-            if pos < (10*10)-10 {
-                let b = pos + 10;
+            if pos < (GRID_SIZE*GRID_SIZE)-GRID_SIZE {
+                let b = pos + GRID_SIZE;
                 if self.world[b] { cntneig += 1; }
             }
-            if pos % 10 != (10-1) && pos < (10*10)-10 {
-                let br = pos + 10 + 1;
+            if pos % GRID_SIZE != (GRID_SIZE-1) && pos < (GRID_SIZE*GRID_SIZE)-GRID_SIZE {
+                let br = pos + GRID_SIZE + 1;
                 if self.world[br] { cntneig += 1; }
             }
 
@@ -115,10 +119,10 @@ impl EventHandler<ggez::GameError> for MyGame {
             if *alive {
 
                 let rectpos = graphics::Rect{
-                    x: (10 * (pos % 10)) as f32,
-                    y: (10 * (pos / 10)) as f32,
-                    h: 10.0,
-                    w: 10.0
+                    x: CELL_SIZE * ((pos % GRID_SIZE) as f32),
+                    y: CELL_SIZE * ((pos / GRID_SIZE) as f32),
+                    h: CELL_SIZE,
+                    w: CELL_SIZE
                 };
 
                 let rectangle = graphics::Mesh::new_rectangle(
