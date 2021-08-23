@@ -1,6 +1,7 @@
 use ggez::{Context, ContextBuilder, GameResult};
 use ggez::graphics::{self, Color};
 use ggez::event::{self, EventHandler};
+use ggez::timer;
 
 use rand::Rng;
 
@@ -108,12 +109,16 @@ impl EventHandler<ggez::GameError> for MyGame {
 
         self.world = new_w;
 
+        println!("FPS: {}", timer::fps(_ctx));
+
         Ok(())
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult<()> {
         graphics::clear(ctx, Color::BLACK);
         // Draw code here...
+
+        //TODO Mesh (cf Meshbuilder)
 
         for (pos, alive) in self.world.iter().enumerate(){
             if *alive {
