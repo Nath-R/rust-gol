@@ -1,7 +1,8 @@
 use ggez::{Context, ContextBuilder, GameResult};
-use ggez::graphics::{self, Color};
+use ggez::graphics::{self, Color, MeshBuilder};
 use ggez::event::{self, EventHandler};
 use ggez::timer;
+use glam::*;
 
 use rand::Rng;
 
@@ -119,27 +120,32 @@ impl EventHandler<ggez::GameError> for MyGame {
         // Draw code here...
 
         //TODO Mesh (cf Meshbuilder)
+        let mut mesh = MeshBuilder::new();
 
         for (pos, alive) in self.world.iter().enumerate(){
             if *alive {
 
-                let rectpos = graphics::Rect{
-                    x: CELL_SIZE * ((pos % GRID_SIZE) as f32),
-                    y: CELL_SIZE * ((pos / GRID_SIZE) as f32),
-                    h: CELL_SIZE,
-                    w: CELL_SIZE
-                };
+                let x = CELL_SIZE * ((pos % GRID_SIZE) as f32);
+                let y = CELL_SIZE * ((pos / GRID_SIZE) as f32);
+                let h = CELL_SIZE;
+                let w = CELL_SIZE;
 
-                let rectangle = graphics::Mesh::new_rectangle(
-                    ctx,
-                    graphics::DrawMode::fill(),
-                    rectpos,
-                    [0.7, 0.7, 0.7, 1.0].into(),
+                mesh.polygon(
+                    graphics::DrawMode::fill(), 
+                    &[
+                        glam::vec2(x, y),
+                        glam::vec2(x, y+h),
+                        glam::vec2(x+w, y+h),
+                        glam::vec2(x+w, y)
+                    ], 
+                    [0.7, 0.7, 0.7, 1.0].into()
                 )?;
-
-                graphics::draw(ctx, &rectangle, (ggez::mint::Point2 { x: 0.0, y: 0.0 },))?;
             }
         }
+
+        let bmesh = mesh.build(ctx)?;
+
+        graphics::draw(ctx, &bmesh, (ggez::mint::Point2 { x: 0.0, y: 0.0 },))?;
 
 
         graphics::present(ctx)
