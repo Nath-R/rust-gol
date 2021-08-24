@@ -10,3 +10,6 @@ ggez = "0.6"
 rand = "0.8"
 glam = { version = "0.15", features = ["mint"] }
 mint = "0.5"
+
+[profile.dev]
+opt-level = 1
