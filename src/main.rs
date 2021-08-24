@@ -119,25 +119,22 @@ impl EventHandler<ggez::GameError> for MyGame {
         graphics::clear(ctx, Color::BLACK);
         // Draw code here...
 
-        //TODO Mesh (cf Meshbuilder)
         let mut mesh = MeshBuilder::new();
 
+        // Loop is bottleneck
         for (pos, alive) in self.world.iter().enumerate(){
             if *alive {
 
-                let x = CELL_SIZE * ((pos % GRID_SIZE) as f32);
-                let y = CELL_SIZE * ((pos / GRID_SIZE) as f32);
-                let h = CELL_SIZE;
-                let w = CELL_SIZE;
+                let rectpos = graphics::Rect{
+                    x: CELL_SIZE * ((pos % GRID_SIZE) as f32),
+                    y: CELL_SIZE * ((pos / GRID_SIZE) as f32),
+                    h: CELL_SIZE,
+                    w: CELL_SIZE
+                };
 
-                mesh.polygon(
+                mesh.rectangle(
                     graphics::DrawMode::fill(), 
-                    &[
-                        glam::vec2(x, y),
-                        glam::vec2(x, y+h),
-                        glam::vec2(x+w, y+h),
-                        glam::vec2(x+w, y)
-                    ], 
+                    rectpos, 
                     [0.7, 0.7, 0.7, 1.0].into()
                 )?;
             }
